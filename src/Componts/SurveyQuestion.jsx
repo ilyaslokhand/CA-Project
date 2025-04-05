@@ -19,7 +19,7 @@ const SurveyQuestion = ({
         {question.options?.map((option, index) => (
           <label
             key={index}
-            className="flex items-center my-2 p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
+            className="flex items-center mb-4 p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
           >
             <input
               type="radio"

@@ -118,3 +118,6 @@
     @apply bg-background text-foreground;
   }
 }
+body {
+  background: rgba(0, 0, 0, 0.02);
+}

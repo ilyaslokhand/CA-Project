@@ -93,12 +93,12 @@ const Survey = () => {
 
   return (
     <div className="flex min-h-screen">
-      <div className="flex-1 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl  ">
-          <p className="text-gray-500 text-sm">
+      <div className="flex-1 flex flex-col justify-center items-center">
+        <div className="bg-white p-6 rounded-lg  w-full max-w-2xl  ">
+          <p className="text-gray-500 text-sm mb-4">
             Question {currentQuestion + 1}
           </p>
-          <h2 className="text-xl font-semibold mb-4">{currentQ.question}</h2>
+          <h2 className="text-xl font-semibold mb-6">{currentQ.question}</h2>
 
           <SurveyQuestion
             question={currentQ}
@@ -109,37 +109,38 @@ const Survey = () => {
             selectedOption={answers[currentQ.id] || ""}
             answers={answers}
           />
-          <div className="flex justify-between mt-4">
+        </div>
+
+        <div className="flex justify-between mt-6  w-full max-w-2xl">
+          <Button
+            variant={Ghost}
+            onClick={handlePrev}
+            className="bg-gray-300 text-black"
+            disabled={currentQuestion === 0}
+          >
+            {" "}
+            Prev{" "}
+          </Button>
+
+          {currentQuestion === questions.length - 1 ? (
             <Button
               variant={Ghost}
-              onClick={handlePrev}
-              className="bg-gray-300 text-black"
-              disabled={currentQuestion === 0}
+              onClick={handleendsurvey}
+              className="bg-purple-500 text-white"
             >
               {" "}
-              Prev{" "}
+              End Survey{" "}
             </Button>
-
-            {currentQuestion === questions.length - 1 ? (
-              <Button
-                variant={Ghost}
-                onClick={handleendsurvey}
-                className="bg-purple-500 text-white"
-              >
-                {" "}
-                End Survey{" "}
-              </Button>
-            ) : (
-              <Button
-                variant={Ghost}
-                onClick={handleNext}
-                className="bg-purple-500 text-white"
-              >
-                {" "}
-                Next{" "}
-              </Button>
-            )}
-          </div>
+          ) : (
+            <Button
+              variant={Ghost}
+              onClick={handleNext}
+              className="bg-purple-500 text-white"
+            >
+              {" "}
+              Next{" "}
+            </Button>
+          )}
         </div>
       </div>
     </div>
