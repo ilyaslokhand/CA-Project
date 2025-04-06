@@ -63,7 +63,7 @@ const ReportList = () => {
       {reports.map((report, index) => (
         <div
           key={index}
-          className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-gray-50"
+          className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-white"
         >
           {/* Left Section */}
           <div flex className="flex">
@@ -108,7 +108,7 @@ const ReportList = () => {
 
             <Button
               // variant="ghost"
-              className={`text-[14px] font-[500] flex items-center gap-1 h-5 p-0 w-[49px] rounded-[0px] `}
+              className={`text-[14px] font-[500] flex items-center gap-1 h-5 p-0 w-[49px] rounded-[0px] cursor-pointer `}
               style={{
                 background: report.bg,
                 color: report.clr,
