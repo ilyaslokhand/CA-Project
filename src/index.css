@@ -118,3 +118,15 @@
     @apply bg-background text-foreground;
   }
 }
+body {
+  background: rgba(0, 0, 0, 0.02);
+}
+/* In global.css or Tailwind base styles */
+html,
+body {
+  overflow-x: hidden;
+}
+/* 
+* {
+  outline: 1px solid red;
+} */

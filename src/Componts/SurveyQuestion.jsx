@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { CheckCircle, Ghost, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import StepProgress from "./StepProgress";
 
 const SurveyQuestion = ({
   question,
@@ -19,40 +20,46 @@ const SurveyQuestion = ({
         {question.options?.map((option, index) => (
           <label
             key={index}
-            className="flex items-center my-2 p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
+            className="flex items-center mb-4 p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
           >
             <input
               type="radio"
-              name="survey-option"
-              value={option}
-              checked={selectedOption === option}
-              onChange={() => onSelect(option)}
-              className="mr-2 accent-purple-500"
+              name={`survey-option-${question.id}`}
+              value={option.value}
+              checked={selectedOption === option.value}
+              onChange={() => onSelect(option.value)}
+              className="mr-2 accent-[#541495]"
             />
-            {option}
+            {option.label}
           </label>
         ))}
       </div>
     );
   } else if (question.type === "text-input") {
     return (
-      <div>
+      <div className="w-full max-w-2xl">
+        {" "}
+        {/* Optional max width for layout control */}
         {question.fields.map((field, index) => (
-          <Input
-            variant="Ghost"
-            key={index}
-            type="text"
-            placeholder={field}
-            value={answers[field] || ""}
-            className="block w-full p-2 my-2 border rounded-lg text-left"
-            onChange={(e) => onInputChange(field, e.target.value)}
-          />
+          <div key={index} className="mb-6">
+            <label className="block text-base font-semibold text-gray-800 mb-2">
+              {field}
+            </label>
+            <Input
+              variant="Ghost"
+              type="text"
+              placeholder="Type here..."
+              value={answers[field] || ""}
+              className="w-full h-14 p-4 border rounded-xl bg-pink-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => onInputChange(field, e.target.value)}
+            />
+          </div>
         ))}
       </div>
     );
   } else if (question.type === "file-upload") {
     return (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 ">
         {question.options.map((option, index) => {
           const fileKey = `${question.id}-${option}`;
           const uploadedFile = answers[fileKey]; // Retrieve correct file

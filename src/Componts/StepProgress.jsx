@@ -1,53 +1,86 @@
-// import React from "react";
-// import { Bell, Menu } from "lucide-react";
+import React from "react";
 
-// const StepProgress = () => {
-//   const steps = [1, 2, 3, 4, 5]; // Step numbers
-//   const activeStep = 2; // Current active step
+const StepProgress = ({ totalSteps, currentStep, answers, questions }) => {
+  const start = Math.max(0, currentStep - 2);
+  const end = Math.min(questions.length, currentStep + 2);
 
-//   return (
-//     <div className="flex items-center justify-between p-4 bg-white ">
-//       {/* Left: Sidebar Toggle + Report Title */}
-//       <div className="flex items-center space-x-4">
-//         <h2 className="text-lg font-semibold">
-//           Annual Report 2024{" "}
-//           <span className="text-yellow-500 text-sm">View Only</span>
-//         </h2>
-//       </div>
+  const getStepColor = (q, step) => {
+    let isAnswered = false;
 
-//       {/* Right: Notification Icon */}
-//       <Bell className="text-purple-500 cursor-pointer" size={20} />
+    if (q.type === "text-input") {
+      isAnswered = q.fields.some((field) => answers[field]?.trim());
+    } else if (q.type === "file-upload") {
+      isAnswered = q.options.some((opt) => answers[`${q.id}-${opt}`]);
+    } else {
+      isAnswered = answers[q.id] !== undefined && answers[q.id] !== "";
+    }
 
-//       {/* Step Progress Bar */}
-//       <div className="absolute left-1/2 top-16 transform -translate-x-1/2 w-[60%] flex items-center">
-//         {steps.map((step, index) => (
-//           <div key={step} className="flex items-center w-full">
-//             {/* Step Circle */}
-//             <div
-//               className={`w-8 h-8 flex items-center justify-center rounded-full text-white font-semibold ${
-//                 step === activeStep
-//                   ? "bg-purple-500"
-//                   : step < activeStep
-//                   ? "bg-green-500"
-//                   : "bg-gray-300"
-//               }`}
-//             >
-//               {step}
-//             </div>
+    const isCurrent = step === currentStep;
+    const isSkipped = step < currentStep && !isAnswered;
+    const isCompleted = step < currentStep && isAnswered;
 
-//             {/* Progress Line */}
-//             {index < steps.length - 1 && (
-//               <div
-//                 className={`h-1 w-full ${
-//                   step < activeStep ? "bg-purple-500" : "bg-gray-200"
-//                 }`}
-//               ></div>
-//             )}
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
+    if (isCurrent) return "bg-[#A855F7] text-white";
+    if (isSkipped) return "bg-yellow-400 text-black";
+    if (isCompleted) return "bg-green-500 text-white";
+    return "bg-gray-200 text-gray-700";
+  };
 
-// export default StepProgress;
+  return (
+    <>
+      <div className="md:flex items-center justify-center hidden mb-6 px-4 min-h-[60px]">
+        {questions.map((q, index) => {
+          const step = index + 1;
+          return (
+            <React.Fragment key={step}>
+              <div className="relative z-10">
+                <div
+                  className={`flex items-center justify-center rounded-full w-10 h-10 font-bold text-sm ${getStepColor(
+                    q,
+                    step
+                  )}`}
+                >
+                  {step}
+                </div>
+              </div>
+              {step !== totalSteps && (
+                <div className="flex-1 h-1 relative -ml-1 -mr-1">
+                  <div className="absolute top-1/2 w-full h-1 bg-gray-200 transform -translate-y-1/2" />
+                  {step < currentStep && (
+                    <div className="absolute top-1/2 left-0 h-1 bg-purple-500 transform -translate-y-1/2 w-full" />
+                  )}
+                </div>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+      {/* Mobile View – Only two steps visible */}
+      <div className="flex md:hidden items-center justify-center mb-6 px-4">
+        {questions.slice(start, end).map((q, index) => {
+          const actualIndex = start + index;
+          const step = actualIndex + 1;
+
+          return (
+            <React.Fragment key={step}>
+              <div className="relative z-10">
+                <div
+                  className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold ${getStepColor(
+                    q,
+                    step
+                  )}`}
+                >
+                  {step}
+                </div>
+              </div>
+              {step !== totalSteps && index !== end - start - 1 && (
+                <div className="w-8 h-1 bg-gray-300 mx-2" />
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+export default StepProgress;

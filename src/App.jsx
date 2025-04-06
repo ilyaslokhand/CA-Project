@@ -9,7 +9,7 @@ import ReportList from "./Pages/Reports";
 import Applayout from "./Layout/Applayout";
 import Survey from "./Pages/Survey";
 import SurveySummary from "./Pages/SurveySummary";
-import Submissionsuccess from "./Pages/SubmissionSuccess";
+import SubmissionSuccess from "./Pages/Submissionsuccess";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +33,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/sucess",
-        element: <Submissionsuccess />,
+        element: <SubmissionSuccess />,
       },
     ],
   },

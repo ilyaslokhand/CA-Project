@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Ghost } from "lucide-react";
 import SurveyQuestion from "@/Componts/SurveyQuestion";
 import { useNavigate } from "react-router-dom";
+import StepProgress from "@/Componts/StepProgress";
 
 const questions = [
   {
@@ -10,10 +11,10 @@ const questions = [
     type: "single-choice",
     question: "What was the company's total revenue growth in 2024?",
     options: [
-      "30% year-over-year increase",
-      "30% year-over-year increase",
-      "20% year-over-year increase",
-      "30% year-over-year increase",
+      { label: "30% year-over-year increase", value: "30-1" },
+      { label: "30% year-over-year increase", value: "30-2" },
+      { label: "20% year-over-year increase", value: "20" },
+      { label: "30% year-over-year increase", value: "30-3" },
     ],
   },
   {
@@ -92,55 +93,61 @@ const Survey = () => {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <div className="flex-1 flex justify-center items-center">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl  ">
-          <p className="text-gray-500 text-sm">
-            Question {currentQuestion + 1}
-          </p>
-          <h2 className="text-xl font-semibold mb-4">{currentQ.question}</h2>
+    <div className="min-h-screen w-full flex flex-col items-center  px-4 py-8">
+      {/* Timeline Section */}
+      <div className="w-full max-w-3xl min-h-[60px] mb-6">
+        <StepProgress
+          questions={questions}
+          currentStep={currentQuestion + 1}
+          totalSteps={questions.length}
+          answers={answers}
+        />
+      </div>
 
-          <SurveyQuestion
-            question={currentQ}
-            onSelect={handleSelectAnswer}
-            onInputChange={handleInputChange}
-            onFileUpload={handleFileUpload}
-            onRadioChange={handleRadioChange}
-            selectedOption={answers[currentQ.id] || ""}
-            answers={answers}
-          />
-          <div className="flex justify-between mt-4">
-            <Button
-              variant={Ghost}
-              onClick={handlePrev}
-              className="bg-gray-300 text-black"
-              disabled={currentQuestion === 0}
-            >
-              {" "}
-              Prev{" "}
-            </Button>
+      <div className=" p-6   w-full max-w-3xl min-h-[300px]">
+        <p className="text-gray-500 text-sm mb-4">
+          Question {currentQuestion + 1}
+        </p>
+        <h2 className="text-xl font-semibold mb-6">{currentQ.question}</h2>
 
-            {currentQuestion === questions.length - 1 ? (
-              <Button
-                variant={Ghost}
-                onClick={handleendsurvey}
-                className="bg-purple-500 text-white"
-              >
-                {" "}
-                End Survey{" "}
-              </Button>
-            ) : (
-              <Button
-                variant={Ghost}
-                onClick={handleNext}
-                className="bg-purple-500 text-white"
-              >
-                {" "}
-                Next{" "}
-              </Button>
-            )}
-          </div>
-        </div>
+        <SurveyQuestion
+          question={currentQ}
+          onSelect={handleSelectAnswer}
+          onInputChange={handleInputChange}
+          onFileUpload={handleFileUpload}
+          selectedOption={answers[currentQ.id] || ""}
+          answers={answers}
+        />
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex justify-between w-full max-w-3xl mt-6">
+        <Button
+          variant={Ghost}
+          onClick={handlePrev}
+          className="bg-[#D3D6DC] text-black cursor-pointer"
+          disabled={currentQuestion === 0}
+        >
+          Prev
+        </Button>
+
+        {currentQuestion === questions.length - 1 ? (
+          <Button
+            variant={Ghost}
+            onClick={handleendsurvey}
+            className="bg-[#A855F7] text-white cursor-pointer"
+          >
+            End Survey
+          </Button>
+        ) : (
+          <Button
+            variant={Ghost}
+            onClick={handleNext}
+            className="bg-[#A855F7] text-white cursor-pointer"
+          >
+            Next
+          </Button>
+        )}
       </div>
     </div>
   );

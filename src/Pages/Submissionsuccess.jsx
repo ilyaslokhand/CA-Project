@@ -1,4 +1,4 @@
-import { CheckCircle } from "lucide-react";
+import { CircleCheck, Ghost } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import React from "react";
@@ -7,22 +7,22 @@ const SubmissionSuccess = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-white-100">
-      <div className="bg-white p-10 md:p-16 text-center">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-white w-full px-4">
+      <div className="text-center">
         {/* Large Check Icon */}
-        <CheckCircle className="text-green-500 w-24 h-24 mx-auto mb-6" />
+        <CircleCheck className="text-[#14D93C] w-24 h-24 mx-auto mb-6" />
 
         {/* Submitted Text */}
-        <h1 className="text-3xl md:text-4xl font-bold text-green-600 mb-4">
-          Submitted
-        </h1>
+        <h1 className="text-4xl font-bold text-[#14D93C] mb-6">Submitted</h1>
 
         {/* Button */}
         <Button
+          variant={Ghost}
           onClick={() => navigate("/")}
-          className="bg-purple-600 text-white px-6 py-3 md:px-8 md:py-4 rounded-full text-lg md:text-xl font-semibold hover:bg-purple-700 transition-all"
+          className="bg-[#ECE6F0] text-white px-8 py-4 text-lg md:text-xl font-semibold rounded-lg shadow transition-all cursor-pointer"
+          style={{ padding: "30px" }}
         >
-          Back to reports →
+          <span className="text-[#6750A4]">Back to reports →</span>
         </Button>
       </div>
     </div>
