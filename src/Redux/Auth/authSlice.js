@@ -1,13 +1,18 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { LoginApi } from "@/api/easydocApi";
-import { build } from "vite";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, thunkAPI) => {
     try {
       const response = await LoginApi({ email, password });
-      return response.data.message;
+      const data = response?.data?.message;
+
+      if (data?.success_key !== 1) {
+        return thunkAPI.rejectWithValue("Invalid email or password");
+      }
+
+      return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
@@ -36,6 +41,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload;
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
