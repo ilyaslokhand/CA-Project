@@ -71,14 +71,16 @@ const ReportList = () => {
       {loading ? (
         <p>Loading reports...</p>
       ) : error ? (
-        <p className="text-red-500">Error: {error}</p>
+        <p className="text-red-500">
+          Error: {error?.message || "Something went wrong"}
+        </p>
       ) : reports.length === 0 ? (
         <p>No reports found.</p>
       ) : (
         reports.map((report, index) => (
           <div
             key={index}
-            className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-white"
+            className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-white cursor-pointer"
           >
             {/* Left Section */}
             <div className="flex">
@@ -101,10 +103,7 @@ const ReportList = () => {
                 </div>
               </div>
               {report.submitted && (
-                <span
-                  className="text-green-600 text-[14px] font-[500] leading-[20px] bg-green-100 px-2 h-5 flex items-center ml-[17px]"
-                  style={{ background: "#DCFCE7", color: "#16A34A" }}
-                >
+                <span className="text-[#16A34A] bg-[#DCFCE7] text-sm font-medium px-2 h-5 flex items-center ml-4">
                   Submitted
                 </span>
               )}
@@ -113,7 +112,7 @@ const ReportList = () => {
             {/* Right Section */}
             <div className="flex items-center gap-[7px]">
               <span
-                className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-semibold ${report.color}`}
+                className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-semibold ${report.color} ${report.bgColor}`}
               >
                 {report.progress}
               </span>

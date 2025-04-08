@@ -26,7 +26,7 @@ const SurveyQuestion = ({
               type="radio"
               name={`survey-option-${question.id}`}
               value={option.value}
-              checked={selectedOption === option.value}
+              checked={answers[question.id] === option.value}
               onChange={() => onSelect(option.value)}
               className="mr-2 accent-[#541495]"
             />

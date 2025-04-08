@@ -29,17 +29,24 @@ const questions = [
     question: "What was the Identity Proof You have? (Upload any one)",
     options: ["AadharCard.pdf", "Driving Licenses", "Pan Card"],
   },
+  {
+    id: 4,
+    type: "All-Type",
+    question: "Provide identity proof and client details",
+    singleChoiceOptions: [
+      { label: "30% year-over-year increase", value: "30-1" },
+      { label: "30% year-over-year increase", value: "30-2" },
+    ],
+    uploadOptions: ["AadharCard.pdf", "Driving Licenses", "Pan Card"],
+    fields: ["Client Name"],
+  },
 ];
 
 const Survey = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [selectedOption, setSelectedOption] = useState({});
-  const navigate = useNavigate();
 
-  const handleRadioChange = (option) => {
-    setSelectedOption(option); // Store selected answer
-  };
+  const navigate = useNavigate();
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
@@ -53,25 +60,31 @@ const Survey = () => {
     }
   };
 
-  const handleSelectAnswer = (answer) => {
+  const handleSelectAnswer = (value) => {
+    const questionId = questions[currentQuestion].id;
     setAnswers((prev) => ({
       ...prev,
-      [questions[currentQuestion].id]: answer,
-    }));
-    setSelectedOption((prev) => ({
-      ...prev,
-      [questions[currentQuestion].id]: answer,
+      [questionId]: value,
     }));
   };
 
-  const handleInputChange = (field, value) => {
-    setAnswers((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleFileUpload = (option, file) => {
+  const handleInputChange = (field, value, questionId) => {
     setAnswers((prev) => ({
       ...prev,
-      [`${questions[currentQuestion].id}-${option}`]: file, // Unique key for each option
+      [questionId]: {
+        ...(prev[questionId] || {}),
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleFileUpload = (option, file, questionId) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: {
+        ...Button(prev[questionId] || {}),
+        [option]: file,
+      },
     }));
   };
 
@@ -115,7 +128,6 @@ const Survey = () => {
           onSelect={handleSelectAnswer}
           onInputChange={handleInputChange}
           onFileUpload={handleFileUpload}
-          selectedOption={answers[currentQ.id] || ""}
           answers={answers}
         />
       </div>
