@@ -28,3 +28,11 @@ export const fetchQuestionsAPI = (questionnaire) => {
     }
   );
 };
+
+export const saveFirstQuestionAnswerAPI = ({ questionnaire, client }) => {
+  return axios.post(
+    `${BASE_URL}/easydoc.easydoc.doctype.questionnaire_response.questionnaire_response.start_question`,
+    { questionnaire, client },
+    { withCredentials: true }
+  );
+};

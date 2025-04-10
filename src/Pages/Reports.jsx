@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CalenderSvg from "@/utility/Svg/CalenderSvg";
-import { useDispatch, useSelector } from "react-redux";
 import { fetchReports } from "@/Redux/getReports/reportSlice";
-import { useNavigate } from "react-router-dom";
+import { saveFirstQuestionAnswer } from "@/Redux/Question/saveFirstQuestionAnswer";
 
 const getReportStyles = (percentage, status) => {
   if (status === "Submitted") {
@@ -38,6 +39,8 @@ const getReportStyles = (percentage, status) => {
 const ReportList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isStarting, setIsStarting] = useState(false);
+
   const {
     reports: apiData,
     loading,
@@ -59,7 +62,7 @@ const ReportList = () => {
       const styles = getReportStyles(item.progress_percentage, item.status);
       return {
         title: item.name,
-        questionnaire_name: item.name, // ✅ Assign this manually
+        questionnaire_name: item.name,
         date: new Date(item.assigned_date).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
@@ -71,7 +74,7 @@ const ReportList = () => {
     }) || [];
 
   return (
-    <div className="p-4 mt-4  flex flex-col gap-4 items-center">
+    <div className="p-4 mt-4 flex flex-col gap-4 items-center">
       {loading ? (
         <p>Loading reports...</p>
       ) : error ? (
@@ -84,31 +87,52 @@ const ReportList = () => {
         reports.map((report, index) => (
           <div
             key={index}
-            onClick={() =>
+            onClick={async () => {
+              setIsStarting(true);
+              const res = await dispatch(
+                saveFirstQuestionAnswer({
+                  questionnaire: report.questionnaire_name,
+                  client: user?.email,
+                })
+              );
+
+              const data = res.payload?.first_question_answer || {};
+
+              const formattedAnswer = {
+                ...(data["Text Input"]?.length
+                  ? {
+                      texts: data["Text Input"].map((item) => ({
+                        [item.label]: item.answered_text,
+                      })),
+                    }
+                  : {}),
+                ...(data["MCQ"]?.length
+                  ? { selectedOption: data["MCQ"][0].answered_option }
+                  : {}),
+                ...(data["File Input"]?.length
+                  ? { file: data["File Input"][0] }
+                  : {}),
+              };
+
+              setIsStarting(false);
+
               navigate("/survey", {
-                state: { questionnaireName: report.questionnaire_name },
-              })
-            }
+                state: {
+                  questionnaireName: report.questionnaire_name,
+                  prefillAnswer: formattedAnswer, // Pass prefilled answer
+                },
+              });
+            }}
             className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-white cursor-pointer"
           >
-            {/* Left Section */}
             <div className="flex">
               <div className="flex items-center gap-3">
                 <div className="cursor-pointer">
                   <CalenderSvg />
                 </div>
                 <div>
-                  <p className="text-[14px] font-[500] leading-[20px] m-0">
-                    {report.title}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <p
-                      className="text-[14px] font-[400] leading-[20px]"
-                      style={{ color: "#6B7280" }}
-                    >
-                      {report.date}
-                    </p>
-                  </div>
+                  <p className="text-[14px] font-[500]">{report.title}</p>
+                  <p className="text-[14px] text-gray-500">{report.date}</p>
                 </div>
               </div>
               {report.submitted && (
@@ -118,16 +142,14 @@ const ReportList = () => {
               )}
             </div>
 
-            {/* Right Section */}
             <div className="flex items-center gap-[7px]">
               <span
                 className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-semibold ${report.color}`}
               >
                 {report.progress}
               </span>
-
               <Button
-                className="text-[14px] font-[500] flex items-center gap-1 h-5 p-0 w-[49px] rounded-[0px] cursor-pointer"
+                className="text-[14px] font-[500] h-5 p-0 w-[49px] rounded-none"
                 style={{
                   background: report.bg,
                   color: report.clr,
@@ -135,7 +157,6 @@ const ReportList = () => {
               >
                 {report.status}
               </Button>
-
               <ChevronRight className="text-gray-400" />
             </div>
           </div>

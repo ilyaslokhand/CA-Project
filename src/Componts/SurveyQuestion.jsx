@@ -1,7 +1,7 @@
-import { CheckCircle, Ghost, Upload } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import React from "react";
 import AllTypeQuestion from "./AllTypeQuestion";
+import FileUploadOption from "./FileUploadOption";
+import TextInputFields from "./TextInputFields";
 
 const SurveyQuestion = ({
   question,
@@ -27,7 +27,7 @@ const SurveyQuestion = ({
           >
             <input
               type={question.type === "multi-choice" ? "checkbox" : "radio"}
-              name={`question-${question.id}`} // important for radio
+              name={`question-${question.id}`}
               value={option.value}
               checked={selectedValues.includes(option.value)}
               onChange={() =>
@@ -46,68 +46,24 @@ const SurveyQuestion = ({
     );
   } else if (question.type === "text-input") {
     return (
-      <div className="w-full max-w-2xl">
-        {" "}
-        {/* Optional max width for layout control */}
-        {question.fields.map((field, index) => (
-          <div key={index} className="mb-6">
-            <label className="block text-base font-semibold text-gray-800 mb-2">
-              {field}
-            </label>
-            <Input
-              variant={Ghost}
-              type="text"
-              placeholder="Type here..."
-              value={answers[question.id]?.[field] || ""}
-              className="w-full h-14 p-4 border rounded-xl bg-pink-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              onChange={(e) =>
-                onInputChange(field, e.target.value, question.id)
-              }
-            />
-          </div>
-        ))}
-      </div>
+      <TextInputFields
+        question={question}
+        answers={answers}
+        onInputChange={onInputChange}
+      />
     );
   } else if (question.type === "file-upload") {
     return (
-      <div className="grid grid-cols-2 gap-4 ">
-        {question.options.map((option, index) => {
-          const uploadedFile = answers[question.id]?.[option];
-
-          return (
-            <label
-              key={index}
-              className={`flex items-center justify-between px-6 py-4 rounded-lg cursor-pointer transition-all ${
-                uploadedFile
-                  ? "bg-purple-600 border border-purple-700"
-                  : "bg-purple-500 hover:bg-purple-600"
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                {uploadedFile ? (
-                  <CheckCircle className="text-white" size={20} />
-                ) : (
-                  <Upload className="text-white" size={20} />
-                )}
-                <span className="text-white font-semibold">
-                  {uploadedFile ? uploadedFile.name : option}
-                </span>
-              </div>
-
-              <Input
-                type="file"
-                accept=".pdf,.jpg,.png"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    onFileUpload(option, file, question.id);
-                  }
-                }}
-              />
-            </label>
-          );
-        })}
+      <div className="grid grid-cols-2 gap-4">
+        {question.options.map((option, index) => (
+          <FileUploadOption
+            key={index}
+            option={option}
+            questionId={question.id}
+            uploadedFile={answers[question.id]?.[option]}
+            onFileUpload={onFileUpload}
+          />
+        ))}
       </div>
     );
   } else if (question.type === "All-Type") {

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { Ghost } from "lucide-react";
 import SurveyQuestion from "@/Componts/SurveyQuestion";
 import StepProgress from "@/Componts/StepProgress";
 import { fetchQuestions, resetQuestions } from "@/Redux/Question/questionSlice";
@@ -10,14 +9,12 @@ import { fetchQuestions, resetQuestions } from "@/Redux/Question/questionSlice";
 const Survey = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  console.log("Location state:", location.state);
-
   const dispatch = useDispatch();
 
   const questionnaireName = location.state?.questionnaireName;
+  const prefillAnswer = location.state?.prefillAnswer;
 
   const { questions, loading, error } = useSelector((state) => state.questions);
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
 
@@ -29,6 +26,18 @@ const Survey = () => {
       dispatch(resetQuestions());
     };
   }, [dispatch, questionnaireName]);
+
+  useEffect(() => {
+    if (prefillAnswer && questions.length > 0) {
+      const firstQ = questions[0];
+      const id = firstQ.id;
+
+      setAnswers((prev) => ({
+        ...prev,
+        [id]: prefillAnswer,
+      }));
+    }
+  }, [prefillAnswer, questions]);
 
   const handleNext = () => {
     if (currentQuestion < questions.length - 1) {
@@ -48,18 +57,11 @@ const Survey = () => {
         const currentArray = Array.isArray(prev[questionId])
           ? prev[questionId]
           : [];
-
         const updated = currentArray.includes(value)
           ? currentArray.filter((v) => v !== value)
           : [...currentArray, value];
-
-        return {
-          ...prev,
-          [questionId]: updated,
-        };
+        return { ...prev, [questionId]: updated };
       }
-
-      // For single-select, store as object
       return {
         ...prev,
         [questionId]: {
@@ -69,14 +71,22 @@ const Survey = () => {
     });
   };
 
-  const handleInputChange = (field, value, questionId) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: {
-        ...(prev[questionId] || {}),
-        [field]: value,
-      },
-    }));
+  const handleInputChange = (field, value, questionId, index) => {
+    setAnswers((prev) => {
+      const prevTexts = prev[questionId]?.texts || [];
+      const newTexts = [...prevTexts];
+      if (!newTexts[index]) {
+        newTexts[index] = {};
+      }
+      newTexts[index][field] = value;
+      return {
+        ...prev,
+        [questionId]: {
+          ...prev[questionId],
+          texts: newTexts,
+        },
+      };
+    });
   };
 
   const handleFileUpload = (option, file, questionId) => {
@@ -95,7 +105,6 @@ const Survey = () => {
     const totalQuestions = questions.length;
     const answered = Object.keys(answers).length;
     const skipped = totalQuestions - answered;
-
     navigate("/summary", {
       state: {
         totalQuestions,
@@ -142,7 +151,6 @@ const Survey = () => {
 
       <div className="flex justify-between w-full max-w-3xl mt-6">
         <Button
-          variant={Ghost}
           onClick={handlePrev}
           className="bg-[#D3D6DC] text-black"
           disabled={currentQuestion === 0}
@@ -155,11 +163,7 @@ const Survey = () => {
             End Survey
           </Button>
         ) : (
-          <Button
-            variant={Ghost}
-            onClick={handleNext}
-            className="bg-[#A855F7] text-white"
-          >
+          <Button onClick={handleNext} className="bg-[#A855F7] text-white">
             Next
           </Button>
         )}
