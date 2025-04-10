@@ -7,9 +7,9 @@ const Applayout = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-white-100 ">
+    <div className="min-h-screen bg-white-100">
       {location.pathname === "/" && <Navbar />}
-      {(location.pathname === "/survey" ||
+      {(location.pathname.startsWith("/survey") ||
         location.pathname === "/summary") && <Sidebar />}
 
       <div className="flex-1 max-w-3xl mx-auto p-6">

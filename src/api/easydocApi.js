@@ -18,3 +18,13 @@ export const fetchReportsAPI = (email) => {
     }
   );
 };
+
+export const fetchQuestionsAPI = (questionnaire) => {
+  return axios.get(
+    `${BASE_URL}/easydoc.easydoc.doctype.question.question.get_questionnaire_questions`,
+    {
+      params: { questionnaire: questionnaire },
+      withCredentials: true,
+    }
+  );
+};

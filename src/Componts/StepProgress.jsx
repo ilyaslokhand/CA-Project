@@ -8,9 +8,9 @@ const StepProgress = ({ totalSteps, currentStep, answers, questions }) => {
     let isAnswered = false;
 
     if (q.type === "text-input") {
-      isAnswered = q.fields.some((field) => answers[field]?.trim());
+      isAnswered = q.fields.some((field) => answers[q.id]?.[field]?.trim());
     } else if (q.type === "file-upload") {
-      isAnswered = q.options.some((opt) => answers[`${q.id}-${opt}`]);
+      isAnswered = q.options.some((opt) => answers[q.id]?.[opt]);
     } else {
       isAnswered = answers[q.id] !== undefined && answers[q.id] !== "";
     }

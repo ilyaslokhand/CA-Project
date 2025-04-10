@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import CalenderSvg from "@/utility/Svg/CalenderSvg";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchReports } from "@/Redux/getReports/reportSlice";
+import { useNavigate } from "react-router-dom";
 
-const getReportStyles = (percentage) => {
-  if (percentage === 100) {
+const getReportStyles = (percentage, status) => {
+  if (status === "Submitted") {
     return {
       bg: "rgba(220, 252, 231, 0.28)",
       clr: "#16A34A",
@@ -15,7 +16,7 @@ const getReportStyles = (percentage) => {
       status: "View",
       submitted: true,
     };
-  } else if (percentage >= 50) {
+  } else if (percentage > 0) {
     return {
       bg: "rgba(254, 249, 195, 0.28)",
       clr: "#CA8A04",
@@ -36,11 +37,13 @@ const getReportStyles = (percentage) => {
 
 const ReportList = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     reports: apiData,
     loading,
     error,
   } = useSelector((state) => state.report);
+
   const user =
     useSelector((state) => state.auth.user) ||
     JSON.parse(localStorage.getItem("user"));
@@ -53,9 +56,10 @@ const ReportList = () => {
 
   const reports =
     apiData?.data?.map((item) => {
-      const styles = getReportStyles(item.progress_percentage);
+      const styles = getReportStyles(item.progress_percentage, item.status);
       return {
         title: item.name,
+        questionnaire_name: item.name, // ✅ Assign this manually
         date: new Date(item.assigned_date).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
@@ -80,6 +84,11 @@ const ReportList = () => {
         reports.map((report, index) => (
           <div
             key={index}
+            onClick={() =>
+              navigate("/survey", {
+                state: { questionnaireName: report.questionnaire_name },
+              })
+            }
             className="flex items-center justify-between w-full max-w-[848px] h-[98px] px-4 py-3 border rounded-lg shadow-sm bg-white cursor-pointer"
           >
             {/* Left Section */}
@@ -112,7 +121,7 @@ const ReportList = () => {
             {/* Right Section */}
             <div className="flex items-center gap-[7px]">
               <span
-                className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-semibold ${report.color} ${report.bgColor}`}
+                className={`w-12 h-12 flex items-center justify-center rounded-full text-sm font-semibold ${report.color}`}
               >
                 {report.progress}
               </span>

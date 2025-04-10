@@ -1,20 +1,23 @@
-import React, { useState } from "react";
 import { CheckCircle, Ghost, Upload } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import StepProgress from "./StepProgress";
+import React from "react";
+import AllTypeQuestion from "./AllTypeQuestion";
 
 const SurveyQuestion = ({
   question,
   onSelect,
   onInputChange,
   onFileUpload,
-  selectedOption,
+
   answers,
 }) => {
   if (!question) return null;
 
-  if (question.type === "single-choice") {
+  if (question.type === "multi-choice" || question.type === "single-choice") {
+    const selectedValues = Array.isArray(answers[question.id])
+      ? answers[question.id]
+      : [answers[question.id]?.selectedOption];
+
     return (
       <div>
         {question.options?.map((option, index) => (
@@ -23,11 +26,17 @@ const SurveyQuestion = ({
             className="flex items-center mb-4 p-2 border rounded-lg hover:bg-purple-100 cursor-pointer"
           >
             <input
-              type="radio"
-              name={`survey-option-${question.id}`}
+              type={question.type === "multi-choice" ? "checkbox" : "radio"}
+              name={`question-${question.id}`} // important for radio
               value={option.value}
-              checked={answers[question.id] === option.value}
-              onChange={() => onSelect(option.value)}
+              checked={selectedValues.includes(option.value)}
+              onChange={() =>
+                onSelect(
+                  option.value,
+                  question.id,
+                  question.type === "multi-choice"
+                )
+              }
               className="mr-2 accent-[#541495]"
             />
             {option.label}
@@ -46,12 +55,14 @@ const SurveyQuestion = ({
               {field}
             </label>
             <Input
-              variant="Ghost"
+              variant={Ghost}
               type="text"
               placeholder="Type here..."
-              value={answers[field] || ""}
+              value={answers[question.id]?.[field] || ""}
               className="w-full h-14 p-4 border rounded-xl bg-pink-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              onChange={(e) => onInputChange(field, e.target.value)}
+              onChange={(e) =>
+                onInputChange(field, e.target.value, question.id)
+              }
             />
           </div>
         ))}
@@ -61,8 +72,7 @@ const SurveyQuestion = ({
     return (
       <div className="grid grid-cols-2 gap-4 ">
         {question.options.map((option, index) => {
-          const fileKey = `${question.id}-${option}`;
-          const uploadedFile = answers[fileKey]; // Retrieve correct file
+          const uploadedFile = answers[question.id]?.[option];
 
           return (
             <label
@@ -84,14 +94,14 @@ const SurveyQuestion = ({
                 </span>
               </div>
 
-              <input
+              <Input
                 type="file"
                 accept=".pdf,.jpg,.png"
                 className="hidden"
                 onChange={(e) => {
                   const file = e.target.files[0];
                   if (file) {
-                    onFileUpload(option, file); // Pass option to store correctly
+                    onFileUpload(option, file, question.id);
                   }
                 }}
               />
@@ -99,6 +109,16 @@ const SurveyQuestion = ({
           );
         })}
       </div>
+    );
+  } else if (question.type === "All-Type") {
+    return (
+      <AllTypeQuestion
+        question={question}
+        onSelect={onSelect}
+        onInputChange={onInputChange}
+        onFileUpload={onFileUpload}
+        answers={answers}
+      />
     );
   }
 
