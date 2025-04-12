@@ -36,3 +36,34 @@ export const saveFirstQuestionAnswerAPI = ({ questionnaire, client }) => {
     { withCredentials: true }
   );
 };
+
+export const saveAnswerAPI = (payload) => {
+  // const formData = new FormData();
+
+  // formData.append("questionnaire_response", payload.questionnaire_response);
+  // formData.append("question", payload.question);
+  // formData.append(
+  //   "next_or_pre_question_index",
+  //   payload.next_or_pre_question_index
+  // );
+
+  // formData.append("answer[MCQ]", JSON.stringify(payload.answer["MCQ"] || []));
+  // formData.append(
+  //   "answer[Text Input]",
+  //   JSON.stringify(payload.answer["Text Input"] || [])
+  // );
+
+  // File upload nu form Data ma set karvanu baki hai.....
+  // For reference only dont copy paste ILYAS.
+  // Append File Inputs (file + label)
+  //  (payload.answer["File Input"] || []).forEach((item, index) => {
+  //   formData.append(`answer[File Input][${index}][label]`, item.label);
+  //   formData.append(`answer[File Input][${index}][answered_file]`, item.answered_file);
+  // });
+
+  return axios.post(
+    `${BASE_URL}/easydoc.easydoc.doctype.questionnaire_response.questionnaire_response.save_answer`,
+    payload,
+    { withCredentials: true }
+  );
+};

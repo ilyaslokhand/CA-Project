@@ -8,7 +8,7 @@ export const saveFirstQuestionAnswer = createAsyncThunk(
       questionnaire,
       client,
     });
-    console.log(response);
+    console.log(response.data.message);
     return response.data.message;
   }
 );
@@ -30,6 +30,10 @@ const firstQuestionSlice = createSlice({
       .addCase(saveFirstQuestionAnswer.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload;
+        const responseName = action.payload?.questionnaire_response_name;
+        if (responseName) {
+          localStorage.setItem("questionnaire_response", responseName);
+        }
       })
       .addCase(saveFirstQuestionAnswer.rejected, (state, action) => {
         state.loading = false;

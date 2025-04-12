@@ -107,12 +107,13 @@ const ReportList = () => {
                     }
                   : {}),
                 ...(data["MCQ"]?.length
-                  ? { selectedOption: data["MCQ"][0].answered_option }
+                  ? { mcqOption: data["MCQ"].map((item) => item.answered_option) }
                   : {}),
                 ...(data["File Input"]?.length
                   ? { file: data["File Input"][0] }
                   : {}),
               };
+              console.log('formatted ans => ', formattedAnswer);
 
               setIsStarting(false);
 

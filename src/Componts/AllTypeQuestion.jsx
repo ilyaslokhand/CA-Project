@@ -1,5 +1,6 @@
 import React from "react";
 import FileUploadOption from "./FileUploadOption";
+import TextInputFields from "./TextInputFields";
 
 const AllTypeQuestion = ({
   question,
@@ -7,6 +8,7 @@ const AllTypeQuestion = ({
   onInputChange,
   onFileUpload,
   answers,
+  onFileRemove,
 }) => {
   if (!question) return null;
 
@@ -23,7 +25,7 @@ const AllTypeQuestion = ({
                 type="radio"
                 name={`survey-option-${question.id}`}
                 value={option.value}
-                checked={answers[question.id]?.selectedOption === option.value}
+                checked={answers[question.id]?.mcqOption[0] === option.value}
                 onChange={() => onSelect(option.value, question.id)}
                 className="mr-2 accent-[#541495]"
               />
@@ -42,6 +44,7 @@ const AllTypeQuestion = ({
               questionId={question.id}
               uploadedFile={answers[question.id]?.[option]}
               onFileUpload={onFileUpload}
+              onFileRemove={onFileRemove}
             />
           ))}
         </div>

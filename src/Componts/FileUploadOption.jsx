@@ -9,13 +9,22 @@ const FileUploadOption = ({
   onFileUpload,
   onFileRemove,
 }) => {
+  const fileInputRef = React.useRef();
+
+  const handleContainerClick = () => {
+    if (!uploadedFile) {
+      fileInputRef.current?.click();
+    }
+  };
+
   return (
-    <label
+    <div
       className={`relative w-full px-6 py-4 rounded-lg cursor-pointer transition-all ${
         uploadedFile
           ? "bg-purple-600 border border-purple-700"
           : "bg-purple-500 hover:bg-purple-600"
       }`}
+      onClick={handleContainerClick}
     >
       {uploadedFile && (
         <button
@@ -33,19 +42,32 @@ const FileUploadOption = ({
         {uploadedFile ? (
           <>
             <CheckCircle className="text-white" size={20} />
-            <span className="text-green-300 font-semibold truncate">
+            <span
+              className="text-green-300 font-semibold truncate"
+              onClick={(e) => {
+                e.stopPropagation();
+                const fileURL = URL.createObjectURL(uploadedFile);
+                window.open(fileURL, "_blank");
+              }}
+            >
               {uploadedFile.name}
             </span>
           </>
         ) : (
           <>
             <Upload className="text-white" size={20} />
-            <span className="text-white font-semibold">{option}</span>
+            <span
+              className="text-white font-semibold"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {option}
+            </span>
           </>
         )}
       </div>
 
       <Input
+        ref={fileInputRef}
         type="file"
         accept=".pdf,.jpg,.png"
         className="hidden"
@@ -56,7 +78,7 @@ const FileUploadOption = ({
           }
         }}
       />
-    </label>
+    </div>
   );
 };
 

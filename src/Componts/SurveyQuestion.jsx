@@ -8,16 +8,17 @@ const SurveyQuestion = ({
   onSelect,
   onInputChange,
   onFileUpload,
-
+  onFileRemove,
   answers,
 }) => {
   if (!question) return null;
 
+  let selectedValues = [];
   if (question.type === "multi-choice" || question.type === "single-choice") {
-    const selectedValues = Array.isArray(answers[question.id])
-      ? answers[question.id]
-      : [answers[question.id]?.selectedOption];
+    selectedValues = answers[question.id]?.mcqOption || [];
+  }
 
+  if (question.type === "multi-choice" || question.type === "single-choice") {
     return (
       <div>
         {question.options?.map((option, index) => (
@@ -30,13 +31,14 @@ const SurveyQuestion = ({
               name={`question-${question.id}`}
               value={option.value}
               checked={selectedValues.includes(option.value)}
-              onChange={() =>
+              onChange={() => {
+                console.log("🟢 Option selected:", option.value);
                 onSelect(
                   option.value,
                   question.id,
                   question.type === "multi-choice"
-                )
-              }
+                );
+              }}
               className="mr-2 accent-[#541495]"
             />
             {option.label}
@@ -62,6 +64,7 @@ const SurveyQuestion = ({
             questionId={question.id}
             uploadedFile={answers[question.id]?.[option]}
             onFileUpload={onFileUpload}
+            onFileRemove={onFileRemove}
           />
         ))}
       </div>
@@ -74,6 +77,7 @@ const SurveyQuestion = ({
         onInputChange={onInputChange}
         onFileUpload={onFileUpload}
         answers={answers}
+        onFileRemove={onFileRemove}
       />
     );
   }
