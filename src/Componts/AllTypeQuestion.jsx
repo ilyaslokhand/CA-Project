@@ -25,7 +25,7 @@ const AllTypeQuestion = ({
                 type="radio"
                 name={`survey-option-${question.id}`}
                 value={option.value}
-                checked={answers[question.id]?.mcqOption[0] === option.value}
+                checked={answers[question.id]?.mcqOption?.[0] === option.value}
                 onChange={() => onSelect(option.value, question.id)}
                 className="mr-2 accent-[#541495]"
               />

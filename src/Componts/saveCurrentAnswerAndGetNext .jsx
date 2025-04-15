@@ -9,12 +9,6 @@ const saveCurrentAnswerAndGetNext = async ({
   dispatch,
   setAnswers,
 }) => {
-
-  console.log('nextIndexToSet => ', nextIndexToSet);
-  console.log('nextOrPrevIndexForBackend => ', nextOrPrevIndexForBackend);
-  console.log('answers => ', answers);
-  console.log('questions => ', questions);
-
   const currentQ = questions[currentQuestion];
   const answerObj = answers[currentQ.id];
   const questionnaireResponse = localStorage.getItem("questionnaire_response");
@@ -25,10 +19,11 @@ const saveCurrentAnswerAndGetNext = async ({
     "Text Input": [],
   };
 
+  // For storing MCQ data in answers.
   if (answerObj?.mcqOption) {
     answerPayload.MCQ = answerObj.mcqOption;
   }
-
+  // For storing Text Input data in answers.
   if (answerObj?.texts) {
     answerObj.texts.forEach((item) => {
       const key = Object.keys(item)[0];
@@ -39,10 +34,10 @@ const saveCurrentAnswerAndGetNext = async ({
       });
     });
   }
-
-  // if (answerObj?.file) {
-  //   answerPayload["File Input"].push(answerObj.file);
-  // }
+  // For storing MCQ data in answers.
+  if (answerObj?.files) {
+    answerPayload["File Input"] = answerObj?.files;
+  }
 
   const payloadToSend = {
     questionnaire_response: questionnaireResponse,

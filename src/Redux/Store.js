@@ -7,6 +7,8 @@ import saveAnswerReducer from "../Redux/Answer/saveAnswerSlice";
 import summaryReducer from "../Redux/Summery/fetchQuestionnaireSummary";
 import logoutReducer from "../Redux/logout/logoutSlice"
 import uploadReducer from "../Redux/Question/uploadSlice"
+import submitReducer from "../Redux/Submit/submitReport"
+import deleteFileReducer from "../Redux/DeleteFile/deleteFileSlice"
 
 
 export const store = configureStore({
@@ -19,6 +21,8 @@ export const store = configureStore({
     summary: summaryReducer,
     logout: logoutReducer,
     upload: uploadReducer,
+    submit:submitReducer,
+    file: deleteFileReducer,
   },
 });
 

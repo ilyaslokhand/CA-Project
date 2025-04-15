@@ -2,9 +2,21 @@ import { CircleCheck, Ghost } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { useDispatch } from "react-redux";
+import { submitReport } from "@/Redux/Submit/submitReport";
 
 const SubmissionSuccess = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const HandleSubmit = () => {
+    const questionnaire_response = localStorage.getItem("questionnaire_response");
+    if (questionnaire_response) {
+      dispatch(submitReport(questionnaire_response));
+    }
+    navigate("/");
+  };
+  
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-white w-full px-4">
@@ -18,7 +30,7 @@ const SubmissionSuccess = () => {
         {/* Button */}
         <Button
           variant={Ghost}
-          onClick={() => navigate("/")}
+          onClick={() => HandleSubmit()}
           className="bg-[#ECE6F0] text-white px-8 py-4 text-lg md:text-xl font-semibold rounded-lg shadow transition-all cursor-pointer"
           style={{ padding: "30px" }}
         >

@@ -5,7 +5,6 @@ export const uploadFile = createAsyncThunk(
   "upload/uploadFile",
   async (file, thunkAPI) => {
     try {
-      
       const response = await uploadFileAPI(file);
       return response.data.message; // file metadata returned
     } catch (error) {

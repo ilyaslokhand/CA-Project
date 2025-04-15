@@ -51,19 +51,20 @@ const ReportList = () => {
     useSelector((state) => state.auth.user) ||
     JSON.parse(localStorage.getItem("user"));
 
-    const isLoggingOut = useSelector((state) => state.logout.loading || state.logout.success);
+  const isLoggingOut = useSelector(
+    (state) => state.logout.loading || state.logout.success
+  );
 
-   useEffect(() => {
-  if (isLoggingOut || !user?.email) {
-    return;
-  }
-  const userEmail = user?.email;
-  if (userEmail) {
-    dispatch(fetchReports(userEmail));
-  }
-}, [dispatch, user?.email, isLoggingOut]);
+  useEffect(() => {
+    if (isLoggingOut || !user?.email) {
+      return;
+    }
+    const userEmail = user?.email;
+    if (userEmail) {
+      dispatch(fetchReports(userEmail));
+    }
+  }, [dispatch, user?.email, isLoggingOut]);
 
-    
   const reports =
     apiData?.data?.map((item) => {
       const styles = getReportStyles(item.progress_percentage, item.status);
@@ -114,13 +115,17 @@ const ReportList = () => {
                     }
                   : {}),
                 ...(data["MCQ"]?.length
-                  ? { mcqOption: data["MCQ"].map((item) => item.answered_option) }
+                  ? {
+                      mcqOption: data["MCQ"].map(
+                        (item) => item.answered_option
+                      ),
+                    }
                   : {}),
                 ...(data["File Input"]?.length
-                  ? { file: data["File Input"][0] }
+                  ? { files: data["File Input"] }
                   : {}),
               };
-              console.log('formatted ans => ', formattedAnswer);
+              console.log("formatted ans => ", formattedAnswer);
 
               setIsStarting(false);
 

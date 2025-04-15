@@ -6,6 +6,7 @@ export const fetchQuestionnaireSummary = createAsyncThunk(
   async (questionnaire_response, { rejectWithValue }) => {
     try {
       const res = await fetchQuestionnaireSummaryAPI(questionnaire_response);
+      console.log(res)
       return res.data.message;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -29,7 +30,7 @@ const summarySlice = createSlice({
       })
       .addCase(fetchQuestionnaireSummary.fulfilled, (state, action) => {
         state.loading = false;
-        state.summary = action.payload.message
+        state.summary = action.payload
       })
       .addCase(fetchQuestionnaireSummary.rejected, (state, action) => {
         state.loading = false;
