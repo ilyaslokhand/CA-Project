@@ -6,7 +6,8 @@ import SurveyQuestion from "@/Componts/SurveyQuestion";
 import StepProgress from "@/Componts/StepProgress";
 import { fetchQuestions, resetQuestions } from "@/Redux/Question/questionSlice";
 import { Ghost } from "lucide-react";
-import { saveAnswer } from "@/Redux/Answer/saveAnswerSlice";
+import saveCurrentAnswerAndGetNext from "@/Componts/saveCurrentAnswerAndGetNext ";
+import { uploadFile } from "@/Redux/Question/uploadSlice";
 
 const Survey = () => {
   const navigate = useNavigate();
@@ -41,103 +42,249 @@ const Survey = () => {
     }
   }, [prefillAnswer, questions]);
 
+  // const handleNext = async () => {
+  //   const currentQ = questions[currentQuestion];
+  //   console.log("currentQ => ", currentQ);
+  //   console.log("answrs => ", answers);
+  //   const questionnaireResponse = localStorage.getItem(
+  //     "questionnaire_response"
+  //   );
+  //   const questionName = currentQ.name;
+  //   const currentQuestionNumber = currentQuestion + 1;
+
+    
+  //   const answerPayload = {
+  //     MCQ: [],
+  //     "File Input": [],
+  //     "Text Input": [],
+  //   };
+
+  //   const answerObj = answers[currentQ.id];
+  //   console.log("🧪 answerObj for current question:", answerObj);
+  //   if (answerObj.hasOwnProperty("mcqOption")) {
+  //     answerPayload.MCQ = answerObj.mcqOption;
+  //   }
+  //   if (answerObj.hasOwnProperty("texts")) {
+  //     answerObj?.texts.forEach((item) => {
+  //       const key = Object.keys(item)[0];
+  //       const value = item[key];
+
+  //       answerPayload["Text Input"].push({
+  //         label: key,
+  //         answered_text: value,
+  //       });
+  //     });
+  //   }
+
+    
+
+  //   const payloadToSend = {
+  //     questionnaire_response: questionnaireResponse,
+  //     question: questionName,
+  //     answer: answerPayload,
+  //     next_or_pre_question_index: String(currentQuestionNumber + 1),
+  //   };
+
+  //   console.log("📤 Payload to saveAnswer API:", payloadToSend);
+
+  //   try {
+  //     const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
+  //     console.log("✅ Backend response:", res?.next_or_pre_question_answer);
+
+  //     if (res?.next_or_pre_question_answer) {
+  //       const preAns = res.next_or_pre_question_answer;
+  //       const nextQ = questions[currentQuestionNumber];
+  //       const nextId = nextQ?.id;
+
+  //       const hasAnyData =
+  //         (preAns["MCQ"] && preAns["MCQ"].length > 0) ||
+  //         (preAns["Text Input"] && preAns["Text Input"].length > 0) ||
+  //         (preAns["File Input"] && preAns["File Input"].length > 0);
+
+  //       if (hasAnyData && nextId) {
+  //         const formattedAnswer = {
+  //           ...(preAns["Text Input"]?.length
+  //             ? {
+  //                 texts: preAns["Text Input"].map((item) => ({
+  //                   [item.label]: item.answered_text,
+  //                 })),
+  //               }
+  //             : {}),
+  //           ...(preAns["MCQ"]?.length
+  //             ? { mcqOption: preAns["MCQ"].map((item) => item.answered_option) }
+  //             : {}),
+  //           ...(preAns["File Input"]?.length
+  //             ? { file: preAns["File Input"][0] }
+  //             : {}),
+  //         };
+
+  //         setAnswers((prev) => ({
+  //           ...prev,
+  //           [nextId]: formattedAnswer,
+  //         }));
+  //       }
+  //     }
+
+  //     if (currentQuestionNumber < questions.length) {
+  //       setCurrentQuestion(currentQuestionNumber);
+  //     }
+  //   } catch (error) {
+  //     console.error("❌ Error saving answer:", error);
+  //   }
+  // };
+
+  // const handlePrev = async () => {
+  //   // Pehle check karo ki kya hum first question se aage hain
+  //   if (currentQuestion > 0) {
+  //     // Current question ka data nikalo
+  //     const currentQ = questions[currentQuestion];
+  //     console.log("currentQ (before going back) => ", currentQ);
+  //     console.log("answers (before going back) => ", answers);
+      
+  //     // Local storage se questionnaire_response nikalo
+  //     const questionnaireResponse = localStorage.getItem(
+  //       "questionnaire_response"
+  //     );
+  //     const questionName = currentQ.name;
+  //     // Previous question number calculate karo
+  //     const previousQuestionNumber = currentQuestion - 1;
+  
+  //     // Answer payload initialize karo, bilkul handleNext ki tarah
+  //     const answerPayload = {
+  //       MCQ: [],
+  //       "File Input": [],
+  //       "Text Input": [],
+  //     };
+  
+      
+  //     const answerObj = answers[currentQ.id];
+  //     console.log("🧪 answerObj for current question (before going back):", answerObj);
+      
+      
+  //     if (answerObj && answerObj.hasOwnProperty("mcqOption")) {
+  //       answerPayload.MCQ = answerObj.mcqOption;
+  //     }
+      
+     
+  //     if (answerObj && answerObj.hasOwnProperty("texts")) {
+  //       answerObj.texts.forEach((item) => {
+  //         const key = Object.keys(item)[0];
+  //         const value = item[key];
+  
+  //         answerPayload["Text Input"].push({
+  //           label: key,
+  //           answered_text: value,
+  //         });
+  //       });
+  //     }
+  
+      
+  //     if (answerObj && answerObj.hasOwnProperty("file")) {
+  //       answerPayload["File Input"].push(answerObj.file);
+  //     }
+  
+      
+  //     const payloadToSend = {
+  //       questionnaire_response: questionnaireResponse,
+  //       question: questionName,
+  //       answer: answerPayload,
+  //       next_or_pre_question_index: String(previousQuestionNumber + 1), 
+  //     };
+  
+  //     console.log("📤 Payload to saveAnswer API (when going back):", payloadToSend);
+  
+  //     try {
+       
+  //       const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
+  //       console.log("✅ Backend response (when going back):", res?.next_or_pre_question_answer);
+  
+        
+  //       if (res?.next_or_pre_question_answer) {
+  //         const preAns = res.next_or_pre_question_answer;
+  //         const prevQ = questions[previousQuestionNumber];
+  //         const prevId = prevQ?.id;
+  
+          
+  //         const hasAnyData =
+  //           (preAns["MCQ"] && preAns["MCQ"].length > 0) ||
+  //           (preAns["Text Input"] && preAns["Text Input"].length > 0) ||
+  //           (preAns["File Input"] && preAns["File Input"].length > 0);
+ 
+  //         if (hasAnyData && prevId) {
+            
+  //           const formattedAnswer = {
+  //             ...(preAns["Text Input"]?.length
+  //               ? {
+  //                   texts: preAns["Text Input"].map((item) => ({
+  //                     [item.label]: item.answered_text,
+  //                   })),
+  //                 }
+  //               : {}),
+  //             ...(preAns["MCQ"]?.length
+  //               ? { mcqOption: preAns["MCQ"].map((item) => item.answered_option) }
+  //               : {}),
+  //             ...(preAns["File Input"]?.length
+  //               ? { file: preAns["File Input"][0] }
+  //               : {}),
+  //           };
+  
+           
+  //           setAnswers((prev) => ({
+  //             ...prev,
+  //             [prevId]: formattedAnswer,
+  //           }));
+  //         }
+  //       }
+  
+  //       // Ab previous question par navigate karo
+  //       setCurrentQuestion(previousQuestionNumber);
+  //     } catch (error) {
+  //       console.error("❌ Error saving answer when going back:", error);
+  //       // Error ke baad bhi previous question par navigate karo
+  //       setCurrentQuestion(previousQuestionNumber);
+  //     }
+  //   }
+  // };
+
+
   const handleNext = async () => {
-    const currentQ = questions[currentQuestion];
-    console.log("currentQ => ", currentQ);
-    console.log("answrs => ", answers);
-    const questionnaireResponse = localStorage.getItem(
-      "questionnaire_response"
-    );
-    const questionName = currentQ.name;
     const currentQuestionNumber = currentQuestion + 1;
-
-    // Step 1: Answer format banao
-    const answerPayload = {
-      MCQ: [],
-      "File Input": [],
-      "Text Input": [],
-    };
-
-    const answerObj = answers[currentQ.id];
-    console.log("🧪 answerObj for current question:", answerObj);
-    if (answerObj.hasOwnProperty("mcqOption")) {
-      answerPayload.MCQ = answerObj.mcqOption;
-    }
-    if (answerObj.hasOwnProperty("texts")) {
-      answerObj?.texts.forEach((item) => {
-        const key = Object.keys(item)[0];
-        const value = item[key];
-
-        answerPayload["Text Input"].push({
-          label: key,
-          answered_text: value,
-        });
-      });
-    }
-
-    // File upload nu baki ke how to manage and set File Upload data in answerPayload
-    // next/pre per click kare to ans saved hoi to ye display karvana properly....
-
-    const payloadToSend = {
-      questionnaire_response: questionnaireResponse,
-      question: questionName,
-      answer: answerPayload,
-      next_or_pre_question_index: String(currentQuestionNumber + 1),
-    };
-
-    console.log("📤 Payload to saveAnswer API:", payloadToSend);
-
-    try {
-      const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
-      console.log("✅ Backend response:", res?.next_or_pre_question_answer);
-
-      if (res?.next_or_pre_question_answer) {
-        const preAns = res.next_or_pre_question_answer;
-        const nextQ = questions[currentQuestionNumber];
-        const nextId = nextQ?.id;
-
-        const hasAnyData =
-          (preAns["MCQ"] && preAns["MCQ"].length > 0) ||
-          (preAns["Text Input"] && preAns["Text Input"].length > 0) ||
-          (preAns["File Input"] && preAns["File Input"].length > 0);
-
-        if (hasAnyData && nextId) {
-          const formattedAnswer = {
-            ...(preAns["Text Input"]?.length
-              ? {
-                  texts: preAns["Text Input"].map((item) => ({
-                    [item.label]: item.answered_text,
-                  })),
-                }
-              : {}),
-            ...(preAns["MCQ"]?.length
-              ? { mcqOption: preAns["MCQ"].map((item) => item.answered_option) }
-              : {}),
-            ...(preAns["File Input"]?.length
-              ? { file: preAns["File Input"][0] }
-              : {}),
-          };
-
-          setAnswers((prev) => ({
-            ...prev,
-            [nextId]: formattedAnswer,
-          }));
-        }
-      }
-
-      if (currentQuestionNumber < questions.length) {
-        setCurrentQuestion(currentQuestionNumber);
-      }
-    } catch (error) {
-      console.error("❌ Error saving answer:", error);
+  
+    const success = await saveCurrentAnswerAndGetNext({
+      currentQuestion,
+      questions,
+      answers,
+      nextIndexToSet: currentQuestionNumber,
+      nextOrPrevIndexForBackend: currentQuestionNumber + 1,
+      dispatch,
+      setAnswers,
+    });
+  
+    if (success && currentQuestionNumber < questions.length) {
+      setCurrentQuestion(currentQuestionNumber);
     }
   };
 
-  const handlePrev = () => {
+  const handlePrev = async () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+      const previousQuestionNumber = currentQuestion - 1;
+  
+      await saveCurrentAnswerAndGetNext({
+        currentQuestion,
+        questions,
+        answers,
+        nextIndexToSet: previousQuestionNumber,
+        nextOrPrevIndexForBackend: previousQuestionNumber + 1,
+        dispatch,
+        setAnswers,
+      });
+  
+      setCurrentQuestion(previousQuestionNumber); // Always go back
     }
   };
+  
+  
+
 
   const handleSelectAnswer = (value, questionId, isMulti) => {
     setAnswers((prev) => {
@@ -197,6 +344,7 @@ const Survey = () => {
   };
 
   const handleFileUpload = (option, file, questionId) => {
+    // Save to local state for UI feedback
     setAnswers((prev) => ({
       ...prev,
       [questionId]: {
@@ -204,7 +352,45 @@ const Survey = () => {
         [option]: file,
       },
     }));
+    console.log('answers before file uploa => ', answers);
+  
+    // Upload to backend
+    dispatch(uploadFile(file))
+      .unwrap()
+      .then((fileData) => {
+        console.log("✅ File uploaded:", fileData);
+        // Optional: You could also save the file URL or metadata in answers state if needed
+        console.log('answers before setAnswer callling => ', answers);
+        setAnswers((prev) => {
+          const existing = prev[questionId] || {};
+          const existingFiles = existing.file || [];
+  
+          // Remove old entry for this label
+          const filtered = existingFiles.filter((item) => item.label !== option);
+  
+          return {
+            ...prev,
+            [questionId]: {
+              ...existing,
+              file: [
+                ...filtered,
+                {
+                  label: option,
+                  answered_file: fileData.file_url,
+                  file_name: fileData.name,
+                },
+              ],
+            },
+          };
+        });
+        console.log('answers after file uploa => ', answers);
+      })
+      .catch((err) => {
+        console.error("❌ File upload failed:", err);
+        // Optional: show toast or error UI
+      });
   };
+  
 
   const currentQ = questions[currentQuestion] ?? {};
 

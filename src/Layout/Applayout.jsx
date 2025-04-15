@@ -8,7 +8,7 @@ const Applayout = () => {
 
   return (
     <div className="min-h-screen bg-white-100">
-      {location.pathname === "/" && <Navbar />}
+      {location.pathname ==="/" && <Navbar />}
       {(location.pathname.startsWith("/survey") ||
         location.pathname === "/summary") && <Sidebar />}
 

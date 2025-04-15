@@ -19,6 +19,8 @@ export const fetchReportsAPI = (email) => {
   );
 };
 
+
+
 export const fetchQuestionsAPI = (questionnaire) => {
   return axios.get(
     `${BASE_URL}/easydoc.easydoc.doctype.question.question.get_questionnaire_questions`,
@@ -67,3 +69,34 @@ export const saveAnswerAPI = (payload) => {
     { withCredentials: true }
   );
 };
+
+
+export const fetchQuestionnaireSummaryAPI =(questionnaire_response)=>{
+  console.log(questionnaire_response)
+  return axios.get(`${BASE_URL}/easydoc.easydoc.doctype.questionnaire_response.questionnaire_response.get_questionnaire_summary`,
+    questionnaire_response,
+    {withCredentials: true}
+  )
+
+}
+
+export const logoutAPI = () => {
+  return axios.get(
+    `${BASE_URL}/easydoc.easydoc.api.easydoc_logout.logout`,
+    {
+      withCredentials: true,
+    }
+  );
+};
+
+
+export const uploadFileAPI = (file)=>{
+  const formData = new FormData();
+  formData.append("file",file);
+  return axios.post(`${BASE_URL}/upload_file`,formData,{
+    withCredentials: true,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+}

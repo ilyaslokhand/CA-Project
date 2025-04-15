@@ -28,10 +28,12 @@ const authSlice = createSlice({
   },
   reducers: {
     logout: (state) => {
-      state.user = null;
+      state.user = null; // Clear the user data from Redux state
+    },
+    resetUserState: (state) => {
+      state.user = null; // Ensure user data is reset after logout
     },
   },
-
   extraReducers: (builder) => {
     builder
       .addCase(loginUser.pending, (state) => {
@@ -50,5 +52,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout,resetUserState  } = authSlice.actions;
 export default authSlice.reducer;

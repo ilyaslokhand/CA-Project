@@ -51,12 +51,19 @@ const ReportList = () => {
     useSelector((state) => state.auth.user) ||
     JSON.parse(localStorage.getItem("user"));
 
-  useEffect(() => {
-    if (user?.email) {
-      dispatch(fetchReports(user.email));
-    }
-  }, [dispatch, user?.email]);
+    const isLoggingOut = useSelector((state) => state.logout.loading || state.logout.success);
 
+   useEffect(() => {
+  if (isLoggingOut || !user?.email) {
+    return;
+  }
+  const userEmail = user?.email;
+  if (userEmail) {
+    dispatch(fetchReports(userEmail));
+  }
+}, [dispatch, user?.email, isLoggingOut]);
+
+    
   const reports =
     apiData?.data?.map((item) => {
       const styles = getReportStyles(item.progress_percentage, item.status);

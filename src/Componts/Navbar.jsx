@@ -1,7 +1,40 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Bell, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser, resetLogoutState } from "@/Redux/logout/logoutSlice"; // ✅ UNCOMMENT this
+import {  resetUserState } from "@/Redux/Auth/authSlice";
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loading, success, error } = useSelector((state) => state.logout);
+
+  const handleLogout = () => {
+   
+    dispatch(logoutUser()); 
+  };
+
+  useEffect(() => {
+
+    if (success) {
+  
+      localStorage.removeItem("user");
+      localStorage.removeItem("questionnaire_response"); 
+      dispatch(resetUserState()); 
+
+      setTimeout(() => {
+        dispatch(resetLogoutState());
+        navigate("/login");
+      }, 200);
+    }
+
+    if (error) {
+      console.error("❌ Logout error:", error);
+    }
+  }, [success, error, dispatch, navigate]);
+
+
   return (
     <nav className="bg-white shadow-md p-4 flex items-center justify-between">
       <h1 className="text-[30px] font-normal text-[#7427C2] font-lustria">
@@ -13,7 +46,10 @@ const Navbar = () => {
         <button className="text-[#A855F7] cursor-pointer">
           <Bell size={20} />
         </button>
-        <button className="text-[#A855F7]  cursor-pointer">
+        <button
+          className="text-[#A855F7] cursor-pointer"
+          onClick={handleLogout}
+        >
           <LogOut size={20} />
         </button>
       </div>
