@@ -52,7 +52,6 @@ const Survey = () => {
   //   const questionName = currentQ.name;
   //   const currentQuestionNumber = currentQuestion + 1;
 
-    
   //   const answerPayload = {
   //     MCQ: [],
   //     "File Input": [],
@@ -75,8 +74,6 @@ const Survey = () => {
   //       });
   //     });
   //   }
-
-    
 
   //   const payloadToSend = {
   //     questionnaire_response: questionnaireResponse,
@@ -140,7 +137,7 @@ const Survey = () => {
   //     const currentQ = questions[currentQuestion];
   //     console.log("currentQ (before going back) => ", currentQ);
   //     console.log("answers (before going back) => ", answers);
-      
+
   //     // Local storage se questionnaire_response nikalo
   //     const questionnaireResponse = localStorage.getItem(
   //       "questionnaire_response"
@@ -148,70 +145,63 @@ const Survey = () => {
   //     const questionName = currentQ.name;
   //     // Previous question number calculate karo
   //     const previousQuestionNumber = currentQuestion - 1;
-  
+
   //     // Answer payload initialize karo, bilkul handleNext ki tarah
   //     const answerPayload = {
   //       MCQ: [],
   //       "File Input": [],
   //       "Text Input": [],
   //     };
-  
-      
+
   //     const answerObj = answers[currentQ.id];
   //     console.log("🧪 answerObj for current question (before going back):", answerObj);
-      
-      
+
   //     if (answerObj && answerObj.hasOwnProperty("mcqOption")) {
   //       answerPayload.MCQ = answerObj.mcqOption;
   //     }
-      
-     
+
   //     if (answerObj && answerObj.hasOwnProperty("texts")) {
   //       answerObj.texts.forEach((item) => {
   //         const key = Object.keys(item)[0];
   //         const value = item[key];
-  
+
   //         answerPayload["Text Input"].push({
   //           label: key,
   //           answered_text: value,
   //         });
   //       });
   //     }
-  
-      
+
   //     if (answerObj && answerObj.hasOwnProperty("file")) {
   //       answerPayload["File Input"].push(answerObj.file);
   //     }
-  
-      
+
   //     const payloadToSend = {
   //       questionnaire_response: questionnaireResponse,
   //       question: questionName,
   //       answer: answerPayload,
-  //       next_or_pre_question_index: String(previousQuestionNumber + 1), 
+  //       next_or_pre_question_index: String(previousQuestionNumber + 1),
   //     };
-  
+
   //     console.log("📤 Payload to saveAnswer API (when going back):", payloadToSend);
-  
+
   //     try {
-       
+
   //       const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
   //       console.log("✅ Backend response (when going back):", res?.next_or_pre_question_answer);
-  
-        
+
   //       if (res?.next_or_pre_question_answer) {
   //         const preAns = res.next_or_pre_question_answer;
   //         const prevQ = questions[previousQuestionNumber];
   //         const prevId = prevQ?.id;
-  
-          
+
   //         const hasAnyData =
   //           (preAns["MCQ"] && preAns["MCQ"].length > 0) ||
   //           (preAns["Text Input"] && preAns["Text Input"].length > 0) ||
   //           (preAns["File Input"] && preAns["File Input"].length > 0);
- 
+
   //         if (hasAnyData && prevId) {
-            
+
   //           const formattedAnswer = {
   //             ...(preAns["Text Input"]?.length
   //               ? {
@@ -227,15 +217,14 @@ const Survey = () => {
   //               ? { file: preAns["File Input"][0] }
   //               : {}),
   //           };
-  
-           
+
   //           setAnswers((prev) => ({
   //             ...prev,
   //             [prevId]: formattedAnswer,
   //           }));
   //         }
   //       }
-  
+
   //       // Ab previous question par navigate karo
   //       setCurrentQuestion(previousQuestionNumber);
   //     } catch (error) {
@@ -246,10 +235,9 @@ const Survey = () => {
   //   }
   // };
 
-
   const handleNext = async () => {
     const currentQuestionNumber = currentQuestion + 1;
-  
+
     const success = await saveCurrentAnswerAndGetNext({
       currentQuestion,
       questions,
@@ -259,7 +247,7 @@ const Survey = () => {
       dispatch,
       setAnswers,
     });
-  
+
     if (success && currentQuestionNumber < questions.length) {
       setCurrentQuestion(currentQuestionNumber);
     }
@@ -268,7 +256,7 @@ const Survey = () => {
   const handlePrev = async () => {
     if (currentQuestion > 0) {
       const previousQuestionNumber = currentQuestion - 1;
-  
+
       await saveCurrentAnswerAndGetNext({
         currentQuestion,
         questions,
@@ -278,13 +266,10 @@ const Survey = () => {
         dispatch,
         setAnswers,
       });
-  
+
       setCurrentQuestion(previousQuestionNumber); // Always go back
     }
   };
-  
-  
-
 
   const handleSelectAnswer = (value, questionId, isMulti) => {
     setAnswers((prev) => {
@@ -352,22 +337,24 @@ const Survey = () => {
         [option]: file,
       },
     }));
-    console.log('answers before file uploa => ', answers);
-  
+    console.log("answers before file uploa => ", answers);
+
     // Upload to backend
     dispatch(uploadFile(file))
       .unwrap()
       .then((fileData) => {
         console.log("✅ File uploaded:", fileData);
         // Optional: You could also save the file URL or metadata in answers state if needed
-        console.log('answers before setAnswer callling => ', answers);
+        console.log("answers before setAnswer callling => ", answers);
         setAnswers((prev) => {
           const existing = prev[questionId] || {};
           const existingFiles = existing.file || [];
-  
+
           // Remove old entry for this label
-          const filtered = existingFiles.filter((item) => item.label !== option);
-  
+          const filtered = existingFiles.filter(
+            (item) => item.label !== option
+          );
+
           return {
             ...prev,
             [questionId]: {
@@ -383,29 +370,42 @@ const Survey = () => {
             },
           };
         });
-        console.log('answers after file uploa => ', answers);
+        console.log("answers after file uploa => ", answers);
       })
       .catch((err) => {
         console.error("❌ File upload failed:", err);
         // Optional: show toast or error UI
       });
   };
-  
 
   const currentQ = questions[currentQuestion] ?? {};
 
-  const handleEndSurvey = () => {
-    const totalQuestions = questions.length;
-    const answered = Object.keys(answers).length;
-    const skipped = totalQuestions - answered;
-    navigate("/summary", {
-      state: {
-        totalQuestions,
-        answered,
-        skipped,
-        answers,
-      },
+  const handleEndSurvey = async () => {
+    const currentQuestionNumber = currentQuestion + 1;
+
+    const success = await saveCurrentAnswerAndGetNext({
+      currentQuestion,
+      questions,
+      answers,
+      nextIndexToSet: currentQuestionNumber,
+      nextOrPrevIndexForBackend: "",
+      dispatch,
+      setAnswers,
     });
+
+    if (success) {
+      const totalQuestions = questions.length;
+      const answered = Object.keys(answers).length;
+      const skipped = totalQuestions - answered;
+      navigate("/summary", {
+        state: {
+          totalQuestions,
+          answered,
+          skipped,
+          answers,
+        },
+      });
+    }
   };
 
   if (loading) return <p className="text-center mt-6">Loading questions...</p>;
