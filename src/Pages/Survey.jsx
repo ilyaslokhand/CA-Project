@@ -8,6 +8,7 @@ import { fetchQuestions, resetQuestions } from "@/Redux/Question/questionSlice";
 import { Ghost } from "lucide-react";
 import saveCurrentAnswerAndGetNext from "@/Componts/saveCurrentAnswerAndGetNext ";
 import { uploadFile } from "@/Redux/Question/uploadSlice";
+import { deleteFile } from "@/Redux/DeleteFile/deleteFileSlice";
 
 const Survey = () => {
   const navigate = useNavigate();
@@ -20,9 +21,9 @@ const Survey = () => {
   const { questions, loading, error } = useSelector((state) => state.questions);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
-  useEffect(() => {
-    console.log("📦 Updated answers:", answers);
-  }, [answers]);
+  // useEffect(() => {
+  //   console.log('answers => ', answers);
+  // }, [answers]);
 
   useEffect(() => {
     if (questionnaireName) {
@@ -44,6 +45,23 @@ const Survey = () => {
       }));
     }
   }, [prefillAnswer, questions]);
+
+  useEffect(() => {
+    const goToIndex = location.state?.goToIndex;
+    const prefillAnswer = location.state?.prefillAnswer;
+  
+    if (goToIndex !== undefined) {
+      setCurrentQuestion(goToIndex);
+  
+      const qId = questions[goToIndex]?.id;
+      if (prefillAnswer && qId) {
+        setAnswers((prev) => ({
+          ...prev,
+          [qId]: prefillAnswer,
+        }));
+      }
+    }
+  }, [location.state, questions]);
 
   const handleNext = async () => {
     const currentQuestionNumber = currentQuestion + 1;
@@ -77,8 +95,49 @@ const Survey = () => {
         setAnswers,
       });
 
-      setCurrentQuestion(previousQuestionNumber); // Always go back
+      setCurrentQuestion(previousQuestionNumber);
     }
+  };
+
+  const handleEndSurvey = async () => {
+    const currentQuestionNumber = currentQuestion + 1;
+
+    const success = await saveCurrentAnswerAndGetNext({
+      currentQuestion,
+      questions,
+      answers,
+      nextIndexToSet: currentQuestionNumber,
+      nextOrPrevIndexForBackend: "",
+      dispatch,
+      setAnswers,
+    });
+
+    if (success) {
+      navigate("/summary", {
+        state: {
+          answers,
+          questions,
+        },
+      });
+    }
+  };
+
+  const handleInputChange = (field, value, questionId, index) => {
+    setAnswers((prev) => {
+      const prevTexts = prev[questionId]?.texts || [];
+      const newTexts = [...prevTexts];
+      if (!newTexts[index]) {
+        newTexts[index] = {};
+      }
+      newTexts[index][field] = value;
+      return {
+        ...prev,
+        [questionId]: {
+          ...prev[questionId],
+          texts: newTexts,
+        },
+      };
+    });
   };
 
   const handleSelectAnswer = (value, questionId, isMulti) => {
@@ -104,35 +163,6 @@ const Survey = () => {
         [questionId]: {
           ...prev[questionId],
           mcqOption: updated,
-        },
-      };
-    });
-  };
-
-  const handleFileRemove = (field, questionId) => {
-    setAnswers((prev) => {
-      const updated = { ...prev[questionId] };
-      delete updated[field];
-      return {
-        ...prev,
-        [questionId]: updated,
-      };
-    });
-  };
-
-  const handleInputChange = (field, value, questionId, index) => {
-    setAnswers((prev) => {
-      const prevTexts = prev[questionId]?.texts || [];
-      const newTexts = [...prevTexts];
-      if (!newTexts[index]) {
-        newTexts[index] = {};
-      }
-      newTexts[index][field] = value;
-      return {
-        ...prev,
-        [questionId]: {
-          ...prev[questionId],
-          texts: newTexts,
         },
       };
     });
@@ -176,35 +206,32 @@ const Survey = () => {
       });
   };
 
-  const currentQ = questions[currentQuestion] ?? {};
+  const handleFileRemove = async (field, questionId) => {    
+    const fileToDelete = answers[questionId]?.files?.find(file => file.label === field);
+    
+    if (!fileToDelete) return;
+  
+    try {
+      dispatch(deleteFile(fileToDelete?.file_name));
 
-  const handleEndSurvey = async () => {
-    const currentQuestionNumber = currentQuestion + 1;
+      setAnswers((prev) => {
+        const updated = { ...prev[questionId] };
 
-    const success = await saveCurrentAnswerAndGetNext({
-      currentQuestion,
-      questions,
-      answers,
-      nextIndexToSet: currentQuestionNumber,
-      nextOrPrevIndexForBackend: "",
-      dispatch,
-      setAnswers,
-    });
-
-    if (success) {
-      const totalQuestions = questions.length;
-      const answered = Object.keys(answers).length;
-      const skipped = totalQuestions - answered;
-      navigate("/summary", {
-        state: {
-          totalQuestions,
-          answered,
-          skipped,
-          answers,
-        },
+        // delete updated[field];
+        updated.files = updated.files?.filter(file => file.label !== field);
+  
+        return {
+          ...prev,
+          [questionId]: updated,
+        };
       });
+
+    } catch (error) {
+      console.error("Error deleting file:", error);
     }
   };
+
+  const currentQ = questions[currentQuestion] ?? {};
 
   if (loading) return <p className="text-center mt-6">Loading questions...</p>;
   if (error) return <p className="text-center mt-6 text-red-500">{error}</p>;

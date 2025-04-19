@@ -45,11 +45,11 @@ const saveCurrentAnswerAndGetNext = async ({
     answer: answerPayload,
     next_or_pre_question_index: String(nextOrPrevIndexForBackend),
   };
-  console.log('payloadToSend => ', payloadToSend);
+  console.log("payloadToSend => ", payloadToSend);
 
   try {
     const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
-    console.log('res.next_or_pre_question_answer => ', res);
+    console.log("res.next_or_pre_question_answer => ", res);
 
     if (res?.next_or_pre_question_answer) {
       const preAns = res.next_or_pre_question_answer;
@@ -74,7 +74,7 @@ const saveCurrentAnswerAndGetNext = async ({
             ? { mcqOption: preAns["MCQ"].map((item) => item.answered_option) }
             : {}),
           ...(preAns["File Input"]?.length
-            ? { file: preAns["File Input"][0] }
+            ? { files: preAns["File Input"] }
             : {}),
         };
 

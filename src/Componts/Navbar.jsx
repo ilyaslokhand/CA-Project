@@ -1,14 +1,23 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Bell, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, resetLogoutState } from "@/Redux/logout/logoutSlice"; // ✅ UNCOMMENT this
 import {  resetUserState } from "@/Redux/Auth/authSlice";
+import Notification from "./Notification";
+
 
 const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [showNotifications, setShowNotifications] = useState(false);
   const { loading, success, error } = useSelector((state) => state.logout);
+  
+
+  const toggleNotifications = ()=>{
+    setShowNotifications(!showNotifications)
+  }
+
 
   const handleLogout = () => {
    
@@ -25,7 +34,7 @@ const Navbar = () => {
 
       setTimeout(() => {
         dispatch(resetLogoutState());
-        navigate("/login");
+        navigate("/");
       }, 200);
     }
 
@@ -42,10 +51,21 @@ const Navbar = () => {
       </h1>
       <h2 className="text-2xl font-bold text-center mt-4">Your Reports</h2>
 
-      <div className="flex items-center gap-4">
-        <button className="text-[#A855F7] cursor-pointer">
-          <Bell size={20} />
-        </button>
+      <div className="flex items-center gap-4 relative">
+        {/* Bell icon with dropdown */}
+        <div className="relative">
+          <button
+            className="text-[#A855F7] cursor-pointer"
+            onClick={toggleNotifications}
+          >
+            <Bell size={20} />
+          </button>
+          {showNotifications && (
+            <Notification />
+          )}
+        </div>
+
+        {/* Logout button */}
         <button
           className="text-[#A855F7] cursor-pointer"
           onClick={handleLogout}
@@ -55,6 +75,6 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;

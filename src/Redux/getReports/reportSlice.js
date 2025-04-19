@@ -30,6 +30,7 @@ const reportSlice = createSlice({
       .addCase(fetchReports.fulfilled, (state, action) => {
         state.loading = false;
         state.reports = action.payload;
+        localStorage.setItem("is_new_notification", JSON.stringify(action.payload.is_new_notification));
       })
       .addCase(fetchReports.rejected, (state, action) => {
         state.loading = false;

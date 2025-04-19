@@ -10,13 +10,14 @@ const SubmissionSuccess = () => {
   const dispatch = useDispatch();
 
   const HandleSubmit = () => {
-    const questionnaire_response = localStorage.getItem("questionnaire_response");
+    const questionnaire_response = localStorage.getItem(
+      "questionnaire_response"
+    );
     if (questionnaire_response) {
       dispatch(submitReport(questionnaire_response));
     }
     navigate("/");
   };
-  
 
   return (
     <div className="flex flex-col justify-center items-center min-h-screen bg-white w-full px-4">

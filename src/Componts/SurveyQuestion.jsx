@@ -62,7 +62,9 @@ const SurveyQuestion = ({
             key={index}
             option={option}
             questionId={question.id}
-            uploadedFile={answers[question.id]?.[option]}
+            uploadedFile={ answers[question.id]?.[option] || 
+              answers[question.id]?.files?.find(file => file.label === option) || 
+              null }
             onFileUpload={onFileUpload}
             onFileRemove={onFileRemove}
           />

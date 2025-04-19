@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/Report");
     }
   }, [user, navigate]);
 

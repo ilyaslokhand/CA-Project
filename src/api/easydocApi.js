@@ -110,6 +110,17 @@ export const deleteFileAPI = (fileName) => {
   );
 };
 
+export const NotificationApi = (email) => {
+  return axios.get(
+    `${BASE_URL}/api/method/easydoc.easydoc.api.send_notification.get_user_notifications`,
+    { 
+      params: {user:email},
+      withCredentials: true
+     }
+  );
+};
+
+
 
 export const uploadFileAPI = (file)=>{
   const formData = new FormData();

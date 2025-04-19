@@ -9,6 +9,7 @@ import logoutReducer from "../Redux/logout/logoutSlice"
 import uploadReducer from "../Redux/Question/uploadSlice"
 import submitReducer from "../Redux/Submit/submitReport"
 import deleteFileReducer from "../Redux/DeleteFile/deleteFileSlice"
+import notificationReducer from "../Redux/Notification/fetchNotifications"
 
 
 export const store = configureStore({
@@ -23,6 +24,8 @@ export const store = configureStore({
     upload: uploadReducer,
     submit:submitReducer,
     file: deleteFileReducer,
+    notifications: notificationReducer,
+
   },
 });
 

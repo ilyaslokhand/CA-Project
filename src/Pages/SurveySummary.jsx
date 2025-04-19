@@ -1,21 +1,29 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Ghost } from "lucide-react";
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchQuestionnaireSummary } from "@/Redux/Summery/fetchQuestionnaireSummary";
+// import saveCurrentAnswerAndGetNext from "@/Componts/saveCurrentAnswerAndGetNext ";
+import { saveAnswer } from "@/Redux/Answer/saveAnswerSlice";
 
 const SurveySummary = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    answers,
+    questions,
+    // currentQuestion,
+  } = location.state || {};
+  const lastQuestionIndex = questions?.length - 1;
 
   const onsubmit = () => {
     navigate("/sucess");
   };
 
-  const {error,loading,summary} = useSelector((state)=>state.summary)
+  const { error, loading, summary } = useSelector((state) => state.summary);
 
-  
   const questionnaire_response = localStorage.getItem("questionnaire_response");
 
   // ✅ Trigger API on page load
@@ -25,11 +33,9 @@ const SurveySummary = () => {
     }
   }, [dispatch, questionnaire_response]);
 
-
   const totalQuestions = summary?.total_questions || 0;
   const answered = summary?.attended_questions || 0;
   const skipped = summary?.skipped_questions || 0;
-
 
   const answeredPercentage = totalQuestions
     ? ((answered / totalQuestions) * 100).toFixed(0)
@@ -39,12 +45,100 @@ const SurveySummary = () => {
     ? ((skipped / totalQuestions) * 100).toFixed(0)
     : 0;
 
+  const handleBack = async () => {
+    const lastQuestion = questions[lastQuestionIndex];
+  
+    // const success = await saveCurrentAnswerAndGetNext({
+    //   currentQuestion: lastQuestionIndex,
+    //   questions,
+    //   answers,
+    //   nextIndexToSet: lastQuestionIndex,
+    //   nextOrPrevIndexForBackend: lastQuestionIndex + 1,
+    //   dispatch,
+    //   setAnswers: () => {}, // no need to update locally here
+    // });
+
+    const questionnaireResponse = localStorage.getItem("questionnaire_response");
+    const questionnaireName = questionnaireResponse.split('-');
+  
+    const answerPayload = {
+      MCQ: [],
+      "File Input": [],
+      "Text Input": [],
+    };
+  
+    const payloadToSend = {
+      questionnaire_response: questionnaireResponse,
+      question: "",
+      answer: answerPayload,
+      next_or_pre_question_index: String(lastQuestionIndex + 1),
+    };
+  
+    try {
+      const res = await dispatch(saveAnswer(payloadToSend)).unwrap();
+  
+      let formattedAnswer = '';
+      if (res?.next_or_pre_question_answer) {
+        const preAns = res.next_or_pre_question_answer;
+        const nextQ = questions[lastQuestionIndex];
+        const nextId = nextQ?.id;
+  
+        const hasAnyData =
+          preAns["MCQ"]?.length > 0 ||
+          preAns["Text Input"]?.length > 0 ||
+          preAns["File Input"]?.length > 0;
+  
+        if (hasAnyData && nextId) {
+          formattedAnswer = {
+            ...(preAns["Text Input"]?.length
+              ? {
+                  texts: preAns["Text Input"].map((item) => ({
+                    [item.label]: item.answered_text,
+                  })),
+                }
+              : {}),
+            ...(preAns["MCQ"]?.length
+              ? { mcqOption: preAns["MCQ"].map((item) => item.answered_option) }
+              : {}),
+            ...(preAns["File Input"]?.length
+              ? { files: preAns["File Input"] }
+              : {}),
+          };
+        }
+      }
+  
+      navigate("/survey", {
+        state: {
+          goToIndex: lastQuestionIndex,
+          prefillAnswer: formattedAnswer,
+          questionnaireName: questionnaireName[0],
+        },
+      });
+    } catch (err) {
+      console.error("❌ Error saving answer:", err);
+      return false;
+    }
+  
+    // if (success) {
+    //   navigate("/survey", {
+    //     state: {
+    //       goToIndex: lastQuestionIndex,
+    //       prefillAnswer: answers[lastQuestion?.id] || "",
+    //       questionnaireName: questions[0]?.questionnaire_name,
+    //     },
+    //   });
+    // }
+  };
+
   if (loading) return <p>Loading summary...</p>;
   if (error) return <p>Error loading summary: {error}</p>;
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 relative">
-      <div className="absolute top-4 left-4 cursor-pointer flex items-center gap-1" onClick={() => navigate('/survey')}>
+      <div
+        className="absolute top-4 left-4 cursor-pointer flex items-center gap-1"
+        onClick={handleBack}
+      >
         <ArrowLeft className="h-5 w-5" />
         <span className="text-sm font-medium">Back</span>
       </div>

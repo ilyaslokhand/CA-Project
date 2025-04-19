@@ -46,11 +46,17 @@ const FileUploadOption = ({
               className="text-green-300 font-semibold truncate"
               onClick={(e) => {
                 e.stopPropagation();
-                const fileURL = URL.createObjectURL(uploadedFile);
-                window.open(fileURL, "_blank");
+                if (!uploadedFile.hasOwnProperty("answered_file")) {
+                  const fileURL = URL.createObjectURL(uploadedFile);
+                  window.open(fileURL, "_blank");
+                }
+                else {
+                  const fileURL = uploadedFile.answered_file;
+                  window.open(fileURL, "_blank");
+                }
               }}
             >
-              {uploadedFile.name}
+              {uploadedFile?.name ?? uploadedFile?.file_show_name}
             </span>
           </>
         ) : (
