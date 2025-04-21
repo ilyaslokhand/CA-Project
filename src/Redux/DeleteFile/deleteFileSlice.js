@@ -6,6 +6,7 @@ export const deleteFile = createAsyncThunk(
   async (fileName, { rejectWithValue }) => {
     try {
       const response = await deleteFileAPI(fileName);
+      console.log('delete response => ', response);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

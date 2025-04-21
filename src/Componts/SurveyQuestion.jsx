@@ -2,6 +2,8 @@ import React from "react";
 import AllTypeQuestion from "./AllTypeQuestion";
 import FileUploadOption from "./FileUploadOption";
 import TextInputFields from "./TextInputFields";
+import { ClipLoader } from "react-spinners";
+import { useSelector } from "react-redux";
 
 const SurveyQuestion = ({
   question,
@@ -10,7 +12,13 @@ const SurveyQuestion = ({
   onFileUpload,
   onFileRemove,
   answers,
+  
 }) => {
+
+  const uploading = useSelector((state) => state.upload.loading);
+
+
+
   if (!question) return null;
 
   let selectedValues = [];
@@ -32,7 +40,6 @@ const SurveyQuestion = ({
               value={option.value}
               checked={selectedValues.includes(option.value)}
               onChange={() => {
-                console.log("🟢 Option selected:", option.value);
                 onSelect(
                   option.value,
                   question.id,
@@ -56,7 +63,12 @@ const SurveyQuestion = ({
     );
   } else if (question.type === "file-upload") {
     return (
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 relative">
+      {uploading && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+          <ClipLoader color="#8B5CF6" size={24} />
+        </div>
+      )}
         {question.options.map((option, index) => (
           <FileUploadOption
             key={index}

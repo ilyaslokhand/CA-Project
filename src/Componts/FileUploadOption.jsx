@@ -1,6 +1,7 @@
 import React from "react";
-import { CheckCircle, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import UploadSvg from "@/utility/Svg/UploadSvg";
+import CheckCircle from "@/utility/Svg/CheckCircle";
 
 const FileUploadOption = ({
   option,
@@ -61,7 +62,7 @@ const FileUploadOption = ({
           </>
         ) : (
           <>
-            <Upload className="text-white" size={20} />
+            <UploadSvg className="text-white" size={20} />
             <span
               className="text-white font-semibold"
               onClick={(e) => e.stopPropagation()}

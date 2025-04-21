@@ -6,7 +6,6 @@ export const fetchQuestionnaireSummary = createAsyncThunk(
   async (questionnaire_response, { rejectWithValue }) => {
     try {
       const res = await fetchQuestionnaireSummaryAPI(questionnaire_response);
-      console.log(res)
       return res.data.message;
     } catch (err) {
       return rejectWithValue(err.message);

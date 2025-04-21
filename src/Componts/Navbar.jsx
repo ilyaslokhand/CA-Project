@@ -1,79 +1,72 @@
-import React, { useEffect, useState } from "react";
-import { Bell, LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, resetLogoutState } from "@/Redux/logout/logoutSlice"; // ✅ UNCOMMENT this
-import {  resetUserState } from "@/Redux/Auth/authSlice";
+import React, {  useState } from "react";
+import { Bell, Ghost, LogOut } from "lucide-react";
+import LoginSvg from "@/utility/Svg/LoginSvg";
 import Notification from "./Notification";
+import useLogout from "./useLogout";
+import { Button } from "@/components/ui/button";
+import NotificationSvg from "@/utility/Svg/NotificationSvg";
 
 
-const Navbar = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [showNotifications, setShowNotifications] = useState(false);
-  const { loading, success, error } = useSelector((state) => state.logout);
-  
-
-  const toggleNotifications = ()=>{
+const Navbar = () => { 
+  const [showNotifications, setShowNotifications] = useState(false);  
+ const toggleNotifications = ()=>{
     setShowNotifications(!showNotifications)
   }
 
 
-  const handleLogout = () => {
-   
-    dispatch(logoutUser()); 
-  };
-
-  useEffect(() => {
-
-    if (success) {
-  
-      localStorage.removeItem("user");
-      localStorage.removeItem("questionnaire_response"); 
-      dispatch(resetUserState()); 
-
-      setTimeout(() => {
-        dispatch(resetLogoutState());
-        navigate("/");
-      }, 200);
-    }
-
-    if (error) {
-      console.error("❌ Logout error:", error);
-    }
-  }, [success, error, dispatch, navigate]);
+  const handleLogout = useLogout()
 
 
   return (
-    <nav className="bg-white shadow-md p-4 flex items-center justify-between">
-      <h1 className="text-[30px] font-normal text-[#7427C2] font-lustria">
-        EasyDoc
-      </h1>
-      <h2 className="text-2xl font-bold text-center mt-4">Your Reports</h2>
+<nav className="bg-white shadow-md px-4 py-2 flex items-center justify-between flex-wrap gap-y-2">
+  {/* Left: Logo */}
+  <div className="flex items-center gap-2">
+    <h1 className="text-[24px] md:text-[30px] font-normal text-[#7427C2] font-lustria ">
+      EasyDoc
+    </h1>
+  </div>
 
-      <div className="flex items-center gap-4 relative">
-        {/* Bell icon with dropdown */}
-        <div className="relative">
-          <button
-            className="text-[#A855F7] cursor-pointer"
-            onClick={toggleNotifications}
-          >
-            <Bell size={20} />
-          </button>
-          {showNotifications && (
-            <Notification />
-          )}
-        </div>
+  
+  <h2 className="text-lg md:text-2xl font-bold text-center leading-none mx-auto">
+    Your Reports
+  </h2>
 
-        {/* Logout button */}
-        <button
-          className="text-[#A855F7] cursor-pointer"
-          onClick={handleLogout}
-        >
-          <LogOut size={20} />
-        </button>
-      </div>
-    </nav>
+  
+  <div
+  className="relative flex items-center justify-center"
+  tabIndex={0}
+  onBlur={() => setShowNotifications(false)}
+  onFocus={() => {}}
+>
+  <Button
+    variant="ghost"
+    size="icon"
+    className="p-2 text-[#A855F7] flex items-center justify-center hover:bg-transparent w-auto h-auto cursor-pointer m-0"
+    onClick={() => setShowNotifications((prev) => !prev)}
+    
+  >
+    <NotificationSvg size={20} />
+  </Button>
+
+  {showNotifications && (
+    <div className="absolute top-full right-0 z-50">
+      <Notification />
+    </div>
+  )}
+</div>
+<Button
+    variant="ghost"
+    size="icon"
+    className="p-2 text-[#A855F7] flex items-center justify-center hover:bg-transparent w-auto h-auto cursor-pointer m-0"
+    onClick={handleLogout}
+  >
+    <LoginSvg size={20}  />
+  </Button>
+
+
+
+</nav>
+
   );
 }
 

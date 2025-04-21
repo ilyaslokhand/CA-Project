@@ -8,7 +8,6 @@ export const saveFirstQuestionAnswer = createAsyncThunk(
       questionnaire,
       client,
     });
-    console.log(response.data.message);
     return response.data.message;
   }
 );

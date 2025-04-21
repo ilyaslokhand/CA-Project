@@ -26,6 +26,11 @@ const Survey = () => {
   // }, [answers]);
 
   useEffect(() => {
+    setCurrentQuestion(0); // Always go to the first question on navigation
+    setAnswers(location.state?.prefillAnswer || {}); // Reset answers
+  }, [location.state?.questionnaireName]);
+
+  useEffect(() => {
     if (questionnaireName) {
       dispatch(fetchQuestions(questionnaireName));
     }
@@ -242,7 +247,7 @@ const Survey = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center px-4 py-8">
+    <div className=" w-full flex flex-col items-center px-4 py-8">
       <div className="w-full max-w-3xl min-h-[60px] mb-6">
         <StepProgress
           questions={questions}
@@ -265,6 +270,8 @@ const Survey = () => {
           onFileUpload={handleFileUpload}
           answers={answers}
           onFileRemove={handleFileRemove}
+        
+
         />
       </div>
 
